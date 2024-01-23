@@ -23,7 +23,7 @@ public class CaracteristicaProducto {
     @Column(name = "caracteristica")
     private String caracteristica;
 
-    @ManyToOne(cascade = CascadeType.ALL, optional = false)
+    @ManyToOne(optional = false)
     @JoinColumn(name = "producto", nullable = false)
     @JsonIgnore
     private Producto producto;

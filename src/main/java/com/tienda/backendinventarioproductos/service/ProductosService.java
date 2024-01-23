@@ -1,6 +1,8 @@
 package com.tienda.backendinventarioproductos.service;
 
+import com.tienda.backendinventarioproductos.data.CaractericticaProductoRepository;
 import com.tienda.backendinventarioproductos.data.ProductoRepository;
+import com.tienda.backendinventarioproductos.model.pojo.CaracteristicaProducto;
 import com.tienda.backendinventarioproductos.model.pojo.Producto;
 import com.tienda.backendinventarioproductos.model.request.CrearProductoRequest;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +18,7 @@ import java.util.List;
 public class ProductosService {
 
 	private final ProductoRepository repository;
+	private final CaractericticaProductoRepository repository1;
 
 	public List<Producto> obtenerProductos() {
 
@@ -53,10 +56,13 @@ public class ProductosService {
             producto.setImagen(request.getImagen());
             producto.setActivo(request.getActivo());
             producto.setStock(request.getStock());
+
             for (int i = 0; i < request.getCaracteristicas().size(); i++) {
                 producto.agregarCaracteristica(request.getCaracteristicas().get(i));
             }
+
             return repository.save(producto);
+
 		} else {
 			return null;
 		}
@@ -64,13 +70,40 @@ public class ProductosService {
 
 	public Producto editarProducto(CrearProductoRequest request, String productoId) {
 		Producto producto = repository.findById(Long.valueOf(productoId)).orElse(null);
+
 		if (request != null && StringUtils.hasLength(request.getCodigo().trim())
 				&& StringUtils.hasLength(request.getNombre().trim())
 				&& !request.getPrecio().isNaN() && !request.getStock().isNaN() && request.getActivo() != null&&producto!=null) {
-			Producto productoEditado = Producto.builder().codigo(request.getCodigo()).nombre(request.getNombre())
-					.precio(request.getPrecio()).imagen(request.getImagen()).stock(request.getStock())
-					.activo(request.getActivo()).build();
-			return repository.save(productoEditado);
+
+
+			List<CaracteristicaProducto> caracteristicaProductoList=repository1.findByProducto(producto);
+
+			for (int j = 0; j < caracteristicaProductoList.size(); j++) {
+				boolean existe=false;
+				for (int i = 0; i < request.getCaracteristicas().size(); i++) {
+					if(caracteristicaProductoList.get(j).getId().equals(request.getCaracteristicas().get(i).getId())){
+						existe=true;
+					}
+				}
+				if(!existe){
+					repository1.deleteById(caracteristicaProductoList.get(j).getId());
+				}
+			}
+			producto = repository.findById(Long.valueOf(productoId)).orElse(null);
+			producto.setCodigo(request.getCodigo());
+			producto.setNombre(request.getNombre());
+			producto.setPrecio(request.getPrecio());
+			producto.setImagen(request.getImagen());
+			producto.setActivo(request.getActivo());
+			producto.setStock(request.getStock());
+
+			for (int i = 0; i < request.getCaracteristicas().size(); i++) {
+				producto.agregarCaracteristica(request.getCaracteristicas().get(i));
+			}
+
+
+			return repository.save(producto);
+
 		} else {
 			return null;
 		}
