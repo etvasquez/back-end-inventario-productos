@@ -1,9 +1,12 @@
 package com.tienda.backendinventarioproductos.model.request;
 
+import com.tienda.backendinventarioproductos.model.pojo.CaracteristicaProducto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.List;
 
 @Getter
 @Setter
@@ -17,5 +20,6 @@ public class CrearProductoRequest {
 	private byte[] imagen;
 	private Double stock;
 	private Boolean activo;
+	private List<CaracteristicaProducto> caracteristicas;
 
 }

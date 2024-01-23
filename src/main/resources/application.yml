@@ -14,7 +14,7 @@ spring:
 
 ## Configuracion de Instancia
 server:
-  port: 8088
+  port: 8089
 
 ## Configuracion del cliente de Eureka
 eureka:

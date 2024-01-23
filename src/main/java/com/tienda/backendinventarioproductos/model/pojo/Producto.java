@@ -3,6 +3,11 @@ package com.tienda.backendinventarioproductos.model.pojo;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 @Entity
 @Table(name = "producto")
 @Getter
@@ -14,7 +19,7 @@ import lombok.*;
 public class Producto {
 	
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
 	@Column(name = "codigo", unique = true)
@@ -35,4 +40,11 @@ public class Producto {
 	@Column(name = "activo")
 	private Boolean activo;
 
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "producto", cascade = CascadeType.ALL)
+	private List<CaracteristicaProducto> caracteristicas=new ArrayList<>();
+
+	public void agregarCaracteristica(CaracteristicaProducto caracteristica) {
+		caracteristica.setProducto(this);
+		caracteristicas.add(caracteristica);
+	}
 }

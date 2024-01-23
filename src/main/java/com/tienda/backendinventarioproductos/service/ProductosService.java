@@ -46,11 +46,17 @@ public class ProductosService {
 				&& StringUtils.hasLength(request.getNombre().trim())
 				&& !request.getPrecio().isNaN() && !request.getStock().isNaN() && request.getActivo() != null) {
 
-			Producto producto = Producto.builder().codigo(request.getCodigo()).nombre(request.getNombre())
-					.precio(request.getPrecio()).imagen(request.getImagen()).stock(request.getStock())
-					.activo(request.getActivo()).build();
-
-			return repository.save(producto);
+            Producto producto = new Producto();
+            producto.setCodigo(request.getCodigo());
+            producto.setNombre(request.getNombre());
+            producto.setPrecio(request.getPrecio());
+            producto.setImagen(request.getImagen());
+            producto.setActivo(request.getActivo());
+            producto.setStock(request.getStock());
+            for (int i = 0; i < request.getCaracteristicas().size(); i++) {
+                producto.agregarCaracteristica(request.getCaracteristicas().get(i));
+            }
+            return repository.save(producto);
 		} else {
 			return null;
 		}

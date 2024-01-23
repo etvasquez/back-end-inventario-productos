@@ -1,7 +1,10 @@
 package com.tienda.backendinventarioproductos.model.pojo;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
 @Table(name = "caracteristica_producto")
@@ -14,9 +17,14 @@ import lombok.*;
 
 public class CaracteristicaProducto {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "codigo", unique = true)
-    private String codigo;
+    @Column(name = "caracteristica")
+    private String caracteristica;
+
+    @ManyToOne(cascade = CascadeType.ALL, optional = false)
+    @JoinColumn(name = "producto", nullable = false)
+    @JsonIgnore
+    private Producto producto;
 }
