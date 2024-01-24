@@ -1,12 +1,15 @@
 package com.tienda.backendinventarioproductos.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tienda.backendinventarioproductos.data.CaractericticaProductoRepository;
+import com.tienda.backendinventarioproductos.data.ProductoJpaRepository;
 import com.tienda.backendinventarioproductos.data.ProductoRepository;
 import com.tienda.backendinventarioproductos.model.pojo.CaracteristicaProducto;
 import com.tienda.backendinventarioproductos.model.pojo.Producto;
 import com.tienda.backendinventarioproductos.model.request.CrearProductoRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -17,13 +20,30 @@ import java.util.List;
 @Slf4j
 public class ProductosService {
 
-	private final ProductoRepository repository;
+	private final ProductoJpaRepository repository;
+	private final ProductoRepository repository2;
 	private final CaractericticaProductoRepository repository1;
 
-	public List<Producto> obtenerProductos() {
+	private ObjectMapper objectMapper;
+
+	/*public List<Producto> obtenerProductos() {
 
 		List<Producto> productos = repository.findByActivo(true);
 		return productos.isEmpty() ? null : productos;
+	}*/
+
+
+	public List<Producto> obtenerProductos(String codigo, String nombre,String precio, String stock, Boolean activo) {
+
+		if (StringUtils.hasLength(codigo) || StringUtils.hasLength(nombre) || StringUtils.hasLength(precio)
+				|| StringUtils.hasLength(stock) || activo != null) {
+
+
+			return repository2.search(codigo, nombre, precio, stock, activo);
+		}
+
+		List<Producto> products = repository2.getProducts();
+		return products.isEmpty() ? null : products;
 	}
 
 	public Producto obtenerProducto(String productoId) {
