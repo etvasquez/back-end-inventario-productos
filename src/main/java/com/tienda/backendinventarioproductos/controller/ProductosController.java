@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import com.tienda.backendinventarioproductos.model.pojo.Producto;
 import com.tienda.backendinventarioproductos.model.request.CrearProductoRequest;
 import com.tienda.backendinventarioproductos.service.ProductosService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -22,7 +23,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 @RestController
 @RequiredArgsConstructor
 @Slf4j
-//@Tag(name = "Productos Controller", description = "Microservicio encargado de exponer operaciones CRUD sobre productos alojados en una base de datos mysql.")
+@Tag(name = "Productos Controller", description = "Microservicio encargado de exponer operaciones CRUD sobre productos alojados en una base de datos mysql.")
 public class ProductosController {
 
 	private final ProductosService service;
@@ -59,7 +60,7 @@ public class ProductosController {
 	}
 
 	@GetMapping("/productos/{productoId}")
-	/*@Operation(
+	@Operation(
 			operationId = "Obtener un producto",
 			description = "Operacion de lectura",
 			summary = "Se devuelve un producto a partir de su identificador.")
@@ -69,10 +70,10 @@ public class ProductosController {
 	@ApiResponse(
 			responseCode = "404",
 			content = @Content(mediaType = "application/json", schema = @Schema(implementation = Void.class)),
-			description = "No se ha encontrado el producto con el identificador indicado.")*/
+			description = "No se ha encontrado el producto con el identificador indicado.")
 	public ResponseEntity<Producto> obtenerProducto(@PathVariable String productoId) {
 
-		log.info("RSolicitud recibida para el producto {}", productoId);
+		log.info("Solicitud recibida para el producto {}", productoId);
 		Producto producto = service.obtenerProducto(productoId);
 
 		if (producto != null) {
@@ -84,6 +85,17 @@ public class ProductosController {
 	}
 
 	@DeleteMapping("/productos/{productoId}")
+	@Operation(
+			operationId = "Eliminar un producto",
+			description = "Operacion de escritura",
+			summary = "Se elimina un producto a partir de su identificador.")
+	@ApiResponse(
+			responseCode = "200",
+			content = @Content(mediaType = "application/json", schema = @Schema(implementation = Void.class)))
+	@ApiResponse(
+			responseCode = "404",
+			content = @Content(mediaType = "application/json", schema = @Schema(implementation = Void.class)),
+			description = "No se ha encontrado el producto con el identificador indicado.")
 	public ResponseEntity<Void> eliminarProducto(@PathVariable String productoId) {
 
 		Boolean removed = service.eliminarProducto(productoId);
@@ -97,6 +109,25 @@ public class ProductosController {
 	}
 
 	@PostMapping("/productos")
+	@Operation(
+			operationId = "Insertar un producto",
+			description = "Operacion de escritura",
+			summary = "Se crea un producto a partir de sus datos.",
+			requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+					description = "Datos del producto a crear.",
+					required = true,
+					content = @Content(mediaType = "application/json", schema = @Schema(implementation = CrearProductoRequest.class))))
+	@ApiResponse(
+			responseCode = "201",
+			content = @Content(mediaType = "application/json", schema = @Schema(implementation = Producto.class)))
+	@ApiResponse(
+			responseCode = "400",
+			content = @Content(mediaType = "application/json", schema = @Schema(implementation = Void.class)),
+			description = "Datos incorrectos introducidos.")
+	@ApiResponse(
+			responseCode = "404",
+			content = @Content(mediaType = "application/json", schema = @Schema(implementation = Void.class)),
+			description = "No se ha encontrado el producto con el identificador indicado.")
 	public ResponseEntity<Producto> crearProducto(@RequestBody CrearProductoRequest request) {
 
 		Producto producto = service.crearProducto(request);
@@ -110,6 +141,21 @@ public class ProductosController {
 	}
 
 	@PutMapping("/productos/{productoId}")
+	@Operation(
+			operationId = "Modificar totalmente un producto",
+			description = "Operacion de escritura",
+			summary = "Se modifica totalmente un producto.",
+			requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+					description = "Datos del producto a actualizar.",
+					required = true,
+					content = @Content(mediaType = "application/merge-patch+json", schema = @Schema(implementation = Producto.class))))
+	@ApiResponse(
+			responseCode = "200",
+			content = @Content(mediaType = "application/json", schema = @Schema(implementation = Producto.class)))
+	@ApiResponse(
+			responseCode = "404",
+			content = @Content(mediaType = "application/json", schema = @Schema(implementation = Void.class)),
+			description = "Producto no encontrado.")
 	public ResponseEntity<Producto> editarProducto(@RequestBody CrearProductoRequest request, @PathVariable String productoId) {
 
 		Producto producto = service.editarProducto(request, productoId);

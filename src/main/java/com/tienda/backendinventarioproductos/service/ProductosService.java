@@ -20,17 +20,8 @@ import java.util.List;
 @Slf4j
 public class ProductosService {
 
-	private final ProductoJpaRepository repository;
-	private final ProductoRepository repository2;
-	private final CaractericticaProductoRepository repository1;
-
-	private ObjectMapper objectMapper;
-
-	/*public List<Producto> obtenerProductos() {
-
-		List<Producto> productos = repository.findByActivo(true);
-		return productos.isEmpty() ? null : productos;
-	}*/
+	private final ProductoRepository repository;
+	private final CaractericticaProductoRepository repositoryCaracteristicaProducto;
 
 
 	public List<Producto> obtenerProductos(String codigo, String nombre,String precio, String stock, Boolean activo) {
@@ -39,24 +30,24 @@ public class ProductosService {
 				|| StringUtils.hasLength(stock) || activo != null) {
 
 
-			return repository2.search(codigo, nombre, precio, stock, activo);
+			return repository.search(codigo, nombre, precio, stock, activo);
 		}
 
-		List<Producto> products = repository2.getProducts();
+		List<Producto> products = repository.getProducts();
 		return products.isEmpty() ? null : products;
 	}
 
 	public Producto obtenerProducto(String productoId) {
-		return repository.findById(Long.valueOf(productoId)).orElse(null);
+		return repository.getById(Long.valueOf(productoId));
 	}
 
 	public Boolean eliminarProducto(String productoId) {
 
-		Producto producto = repository.findById(Long.valueOf(productoId)).orElse(null);
+		Producto producto = repository.getById(Long.valueOf(productoId));
 
 		if (producto != null) {
 			producto.setActivo(false);
-			repository.save(producto);
+			repository.delete(producto);
 			return Boolean.TRUE;
 		} else {
 			return Boolean.FALSE;
@@ -89,14 +80,14 @@ public class ProductosService {
 	}
 
 	public Producto editarProducto(CrearProductoRequest request, String productoId) {
-		Producto producto = repository.findById(Long.valueOf(productoId)).orElse(null);
+		Producto producto = repository.getById(Long.valueOf(productoId));
 
 		if (request != null && StringUtils.hasLength(request.getCodigo().trim())
 				&& StringUtils.hasLength(request.getNombre().trim())
 				&& !request.getPrecio().isNaN() && !request.getStock().isNaN() && request.getActivo() != null&&producto!=null) {
 
 
-			List<CaracteristicaProducto> caracteristicaProductoList=repository1.findByProducto(producto);
+			List<CaracteristicaProducto> caracteristicaProductoList=repositoryCaracteristicaProducto.findByProducto(producto);
 
 			for (int j = 0; j < caracteristicaProductoList.size(); j++) {
 				boolean existe=false;
@@ -106,10 +97,10 @@ public class ProductosService {
 					}
 				}
 				if(!existe){
-					repository1.deleteById(caracteristicaProductoList.get(j).getId());
+					repositoryCaracteristicaProducto.deleteById(caracteristicaProductoList.get(j).getId());
 				}
 			}
-			producto = repository.findById(Long.valueOf(productoId)).orElse(null);
+			producto = repository.getById(Long.valueOf(productoId));
 			producto.setCodigo(request.getCodigo());
 			producto.setNombre(request.getNombre());
 			producto.setPrecio(request.getPrecio());
