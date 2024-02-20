@@ -47,7 +47,7 @@ public class ProductosService {
 
 		if (producto != null) {
 			producto.setActivo(false);
-			repository.delete(producto);
+			repository.save(producto);
 			return Boolean.TRUE;
 		} else {
 			return Boolean.FALSE;
